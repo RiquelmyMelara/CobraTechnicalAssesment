@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator.js';
 import { UserRole } from '../../common/enums/user-role.enum.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
@@ -19,6 +20,7 @@ import { UpdatePetDto } from './dto/update-pet.dto.js';
 import { Pet } from './pet.model.js';
 import { PaginatedPets, PetsService } from './pets.service.js';
 
+@ApiTags('pets')
 @Controller('pets')
 export class PetsController {
   constructor(private readonly pets: PetsService) {}
@@ -34,6 +36,7 @@ export class PetsController {
   }
 
   @Post()
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STAFF)
   create(@Body() dto: CreatePetDto): Promise<Pet> {
@@ -41,6 +44,7 @@ export class PetsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STAFF)
   update(

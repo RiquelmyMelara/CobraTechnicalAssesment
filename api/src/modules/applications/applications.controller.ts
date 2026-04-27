@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import { Roles } from '../../common/decorators/roles.decorator.js';
 import { UserRole } from '../../common/enums/user-role.enum.js';
@@ -24,6 +25,8 @@ import {
 import { ListApplicationsQueryDto } from './dto/list-applications-query.dto.js';
 import { SubmitApplicationDto } from './dto/submit-application.dto.js';
 
+@ApiTags('applications')
+@ApiBearerAuth('access-token')
 @Controller('applications')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ApplicationsController {

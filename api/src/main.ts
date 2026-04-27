@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 import type { AppEnv } from './config/env.validation.js';
@@ -29,11 +30,31 @@ async function bootstrap(): Promise<void> {
   );
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  // OpenAPI / Swagger UI at /docs. The bearer scheme lets reviewers
+  // paste a token from /auth/login into the "Authorize" button and try
+  // the protected endpoints directly from the docs page.
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Pet Adoption Board API')
+    .setDescription(
+      'REST API for the Cobra Studio backend assessment (Option E).',
+    )
+    .setVersion('0.1.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    )
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
+
   const port = config.get('PORT', { infer: true });
   await app.listen(port);
 
   const logger = new Logger('Bootstrap');
   logger.log(`API listening on http://localhost:${port}`);
+  logger.log(`OpenAPI docs at  http://localhost:${port}/docs`);
 }
 
 function parseCorsOrigin(raw: string): boolean | string | string[] {

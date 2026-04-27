@@ -162,6 +162,14 @@ routes additionally require `role = 'staff'`.
 | POST   | `/applications/:id/approve`         | staff  | triggers the cascade                             |
 | POST   | `/applications/:id/reject`          | staff  | flips a single application                       |
 
+### Interactive docs (Swagger / OpenAPI)
+
+When the API is running, point a browser at **http://localhost:3000/docs**.
+You'll get a Swagger UI with every endpoint, request/response shapes
+(introspected from the `class-validator` DTOs), and an "Authorize"
+button — paste a token from `POST /auth/login` and you can hit the
+protected endpoints right from the docs page.
+
 ### Error envelope
 
 Every error response is wrapped consistently by `AllExceptionsFilter`:
@@ -296,9 +304,12 @@ backend.
 - **`.js` extensions in TS imports.** `tsconfig` uses
   `module: nodenext`. Jest's `moduleNameMapper` strips the suffix so
   the same source imports work for both the build and the tests.
-- **No Swagger.** Easy to add (`@nestjs/swagger` + a few decorators)
-  but not committed to keep the dependency surface small. Mentioned in
-  the plan as an obvious next step.
+- **Swagger via the `@nestjs/swagger` CLI plugin.** Rather than
+  decorating every DTO field with `@ApiProperty` by hand, we enable
+  the plugin in `nest-cli.json`. It introspects the existing
+  `class-validator` decorators at build time and feeds them into the
+  generated OpenAPI document, so the DTOs stay clean and the spec
+  stays accurate without duplication.
 
 ## Out of scope
 
@@ -310,7 +321,6 @@ Deliberately omitted with no half-implementations left behind:
 - Audit log table
 - Rate limiting (one-liner with `@nestjs/throttler` if asked)
 - i18n
-- Swagger / OpenAPI spec
 
 ## AI workflow
 
