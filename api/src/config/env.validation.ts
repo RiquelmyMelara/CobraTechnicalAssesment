@@ -20,6 +20,8 @@ export const envValidationSchema = Joi.object({
   JWT_SECRET: Joi.string().min(16).required(),
   JWT_EXPIRES_IN: Joi.string().default('1d'),
   BCRYPT_COST: Joi.number().integer().min(4).max(15).default(10),
+
+  CORS_ORIGIN: Joi.string().default('*'),
 });
 
 /** Strongly-typed env shape, matching the schema above. */
@@ -36,4 +38,6 @@ export interface AppEnv {
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
   BCRYPT_COST: number;
+
+  CORS_ORIGIN: string;
 }
