@@ -122,6 +122,40 @@ export const api = {
 
   getPet: (id: string) => request<Pet>(`/pets/${id}`),
 
+  createPet: (
+    token: string,
+    input: {
+      name: string;
+      species: string;
+      breed?: string;
+      ageYears: number;
+      description: string;
+    },
+  ) =>
+    request<Pet>('/pets', {
+      method: 'POST',
+      body: JSON.stringify(input),
+      token,
+    }),
+
+  updatePet: (
+    token: string,
+    id: string,
+    input: Partial<{
+      name: string;
+      species: string;
+      breed: string | null;
+      ageYears: number;
+      description: string;
+      status: 'available' | 'pending' | 'adopted';
+    }>,
+  ) =>
+    request<Pet>(`/pets/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+      token,
+    }),
+
   apply: (token: string, input: { petId: string; message?: string }) =>
     request<Application>('/applications', {
       method: 'POST',

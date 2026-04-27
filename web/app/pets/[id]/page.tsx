@@ -65,7 +65,14 @@ export default function PetDetailPage() {
       <Link href="/pets" className="muted">← Back to listings</Link>
       <div className="row between">
         <h1>{pet.name}</h1>
-        <span className={`pill ${pet.status}`}>{pet.status}</span>
+        <div className="row" style={{ gap: '0.5rem' }}>
+          <span className={`pill ${pet.status}`}>{pet.status}</span>
+          {user?.role === 'staff' && (
+            <Link href={`/staff/pets/${pet.id}/edit`}>
+              <button className="ghost">Edit</button>
+            </Link>
+          )}
+        </div>
       </div>
       <p className="muted">
         {pet.species}

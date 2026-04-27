@@ -58,7 +58,14 @@ export default function StaffPage() {
 
   return (
     <section className="spaced">
-      <h1>Pending applications</h1>
+      <div className="row between">
+        <h1>Staff dashboard</h1>
+        <Link href="/staff/pets/new">
+          <button>+ Add a pet</button>
+        </Link>
+      </div>
+
+      <h2 style={{ marginTop: '1rem' }}>Pending applications</h2>
       {error && <div className="error">{error}</div>}
       {data && data.data.length === 0 && (
         <p className="muted">No pending applications. The queue is empty.</p>
