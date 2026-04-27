@@ -310,6 +310,12 @@ backend.
   `class-validator` decorators at build time and feeds them into the
   generated OpenAPI document, so the DTOs stay clean and the spec
   stays accurate without duplication.
+- **Rate limiting via `@nestjs/throttler`.** Global default of 60
+  requests/min per IP, with tighter overrides on the auth endpoints
+  (5/min for register, 10/min for login) to slow down account spam
+  and credential stuffing. Applied as a global guard via `APP_GUARD`,
+  so a forgotten `@UseGuards(ThrottlerGuard)` on a new controller
+  doesn't open a hole.
 
 ## Out of scope
 
@@ -319,7 +325,6 @@ Deliberately omitted with no half-implementations left behind:
 - Refresh tokens (single short-lived JWT is fine for this scope)
 - Pet image uploads
 - Audit log table
-- Rate limiting (one-liner with `@nestjs/throttler` if asked)
 - i18n
 
 ## AI workflow
