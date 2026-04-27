@@ -46,6 +46,11 @@ before making structural changes.**
 7. **Transactions for multi-row state changes.** The application
    approve-cascade is the canonical example — pet update + sibling rejects
    must happen inside one Sequelize transaction.
+8. **JWT role is trusted for token lifetime.** `JwtStrategy.validate`
+   reads `role` from the payload, not the DB. If you're tempted to add
+   per-request DB lookups (e.g. to handle staff demotion), update
+   `JwtStrategy` *and* the README design-decision section together so
+   the trade-off stays documented.
 
 ### Files an AI tool should *not* touch without a clear reason
 

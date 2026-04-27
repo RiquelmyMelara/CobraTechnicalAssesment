@@ -281,6 +281,14 @@ backend.
 - **`bcryptjs` instead of native `bcrypt`.** Pure-JS so the install is
   portable across machines (no `node-gyp`, no prebuilt binary). Cost 10
   is plenty here; tunable via env.
+- **JWT role is trusted for the token's lifetime.** `JwtStrategy.validate`
+  reads `role` from the payload rather than re-fetching the user on every
+  request. A user demoted from staff to user keeps staff access until
+  their token expires (default 1d). Trade-off: zero DB round-trips per
+  request vs. a small staleness window. Mitigations if this matters:
+  shorten `JWT_EXPIRES_IN`, swap the strategy to do a DB lookup, or add
+  a revocation list. Marked here so reviewers don't have to spelunk for
+  it.
 - **`sync({force:true})` in dev, no migrations.** Migrations would be
   the right call for production; for an assessment-grade project, the
   seed script's drop-and-recreate flow is faster to iterate on. Plan

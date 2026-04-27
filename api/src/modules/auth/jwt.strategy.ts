@@ -25,6 +25,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * passport-jwt has already validated signature + expiry by the time this
    * runs. We do a defensive shape check so a forged-but-valid-secret token
    * with the wrong claims still gets bounced.
+   *
+   * NOTE: the role on the returned AuthUser comes from the JWT payload,
+   * not a fresh DB lookup. That means a user demoted from staff to user
+   * keeps staff access until their token expires (default 1d). Acceptable
+   * for short-lived tokens; mitigations include refetching the user on
+   * every request, shortening JWT_EXPIRES_IN, or maintaining a token
+   * revocation list. See README "Notable design decisions" for the
+   * tradeoff.
    */
   validate(payload: unknown): AuthUser {
     if (!isJwtPayload(payload)) {
