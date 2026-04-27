@@ -1,0 +1,26 @@
+# Cursor rules — see CLAUDE.md for the full guide.
+
+This project's full AI guide is in CLAUDE.md at the repo root. Read it
+before suggesting changes. Architectural decisions live in plan.md.
+
+Quick reminders for Cursor:
+
+- TypeScript strict mode is enforced (`strict`, `noUncheckedIndexedAccess`,
+  `exactOptionalPropertyTypes`, `noUnusedLocals`, `noUnusedParameters`).
+  Never weaken these. Prefer narrowing over `as` / `any`.
+- New features go in `api/src/modules/<feature>/` with controller, service,
+  model, DTOs.
+- Validation at the boundary via `class-validator` DTOs and the global
+  `ValidationPipe` (whitelist + forbidNonWhitelisted + transform).
+- Authorization is a service/guard concern. Owner-scoped reads filter by
+  `user_id` in the service query, never in the controller.
+- Errors via `HttpException`; the global exception filter shapes the
+  response. No `res.status(...).json(...)`.
+- No `console.log` in production code; use the Nest `Logger`. Delete dead
+  code rather than commenting it out.
+- Multi-row state changes go inside a Sequelize transaction. The
+  application-approval cascade is the canonical example.
+- Commits never include AI co-author trailers. Author is
+  `Riquelmy Melara <riquelmy.melara@tecniastudio.com>`.
+
+See CLAUDE.md for layout, commands, and the "do not touch" list.
