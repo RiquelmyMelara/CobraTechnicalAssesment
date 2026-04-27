@@ -43,13 +43,15 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('hashes the password, normalises email, returns user + token', async () => {
-      users.create.mockImplementation(async (attrs: Record<string, unknown>) => ({
-        id: 'new-user-id',
-        email: attrs['email'],
-        name: attrs['name'],
-        role: UserRole.USER,
-        passwordHash: attrs['passwordHash'],
-      }));
+      users.create.mockImplementation((attrs: Record<string, unknown>) =>
+        Promise.resolve({
+          id: 'new-user-id',
+          email: attrs['email'],
+          name: attrs['name'],
+          role: UserRole.USER,
+          passwordHash: attrs['passwordHash'],
+        }),
+      );
 
       const out = await service.register({
         email: '  Alice@Example.COM ',
@@ -61,7 +63,8 @@ describe('AuthService', () => {
       expect(out.user.role).toBe(UserRole.USER);
       expect(out.accessToken).toBe('signed.jwt.token');
 
-      const createCall = users.create.mock.calls[0]?.[0] as Record<string, unknown>;
+      const calls = users.create.mock.calls as Array<[Record<string, unknown>]>;
+      const createCall = calls[0]![0];
       expect(createCall['email']).toBe('alice@example.com');
       // The DB never sees the plain password.
       expect(createCall['passwordHash']).not.toEqual('hunter2hunter2');

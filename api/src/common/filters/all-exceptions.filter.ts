@@ -45,7 +45,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const body = exception.getResponse();
-      const { message, details } = unpackHttpExceptionBody(body, exception.message);
+      const { message, details } = unpackHttpExceptionBody(
+        body,
+        exception.message,
+      );
       response.status(status).json({
         error: {
           code: codeForStatus(status),
@@ -57,7 +60,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return;
     }
 
-    const message = exception instanceof Error ? exception.message : String(exception);
+    const message =
+      exception instanceof Error ? exception.message : String(exception);
     this.logger.error(
       `Unhandled exception on ${request.method} ${request.originalUrl} ` +
         `[requestId=${requestId}]: ${message}`,

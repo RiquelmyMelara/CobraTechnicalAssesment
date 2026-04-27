@@ -19,7 +19,7 @@ export class RegisterDto {
 
   @IsString()
   @Length(1, 120)
-  @Matches(/^[\p{L}\p{M} '.\-]+$/u, {
+  @Matches(/^[\p{L}\p{M} '.-]+$/u, {
     message:
       'name may contain letters, spaces, apostrophes, periods and hyphens',
   })

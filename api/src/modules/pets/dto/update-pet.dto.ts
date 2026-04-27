@@ -9,7 +9,10 @@ import {
   Min,
   ValidateIf,
 } from 'class-validator';
-import { PET_STATUS_VALUES, PetStatus } from '../../../common/enums/pet-status.enum.js';
+import {
+  PET_STATUS_VALUES,
+  PetStatus,
+} from '../../../common/enums/pet-status.enum.js';
 
 export class UpdatePetDto {
   @IsOptional()

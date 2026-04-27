@@ -48,7 +48,9 @@ export class AuthService {
       return this.buildAuthResult(user);
     } catch (err) {
       if (err instanceof UniqueConstraintError) {
-        throw new ConflictException('An account with this email already exists.');
+        throw new ConflictException(
+          'An account with this email already exists.',
+        );
       }
       throw err;
     }
@@ -66,7 +68,10 @@ export class AuthService {
 
     if (!user) {
       // Run a dummy compare anyway to keep timing roughly constant.
-      await bcrypt.compare(dto.password, '$2b$10$invalidinvalidinvalidinvaliduO');
+      await bcrypt.compare(
+        dto.password,
+        '$2b$10$invalidinvalidinvalidinvaliduO',
+      );
       return invalid();
     }
 

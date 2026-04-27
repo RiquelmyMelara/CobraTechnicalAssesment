@@ -10,7 +10,10 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 import { Application } from '../applications/application.model.js';
-import { PET_STATUS_VALUES, PetStatus } from '../../common/enums/pet-status.enum.js';
+import {
+  PET_STATUS_VALUES,
+  PetStatus,
+} from '../../common/enums/pet-status.enum.js';
 
 export interface PetCreationAttrs {
   name: string;
@@ -24,9 +27,7 @@ export interface PetCreationAttrs {
 @Table({
   tableName: 'pets',
   underscored: true,
-  indexes: [
-    { name: 'pets_status_species_idx', fields: ['status', 'species'] },
-  ],
+  indexes: [{ name: 'pets_status_species_idx', fields: ['status', 'species'] }],
 })
 export class Pet extends Model<Pet, PetCreationAttrs> {
   @PrimaryKey

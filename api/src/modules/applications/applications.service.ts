@@ -41,7 +41,10 @@ export class ApplicationsService {
    * Locks the pet row inside a transaction so two concurrent submissions
    * on the same pet can't race past the checks.
    */
-  async submit(user: AuthUser, dto: SubmitApplicationDto): Promise<Application> {
+  async submit(
+    user: AuthUser,
+    dto: SubmitApplicationDto,
+  ): Promise<Application> {
     return this.sequelize.transaction(async (t) => {
       const pet = await this.pets.findByPk(dto.petId, {
         transaction: t,
@@ -51,7 +54,9 @@ export class ApplicationsService {
         throw new NotFoundException(`Pet ${dto.petId} not found`);
       }
       if (pet.status !== PetStatus.AVAILABLE) {
-        throw new ConflictException('This pet is no longer available for adoption.');
+        throw new ConflictException(
+          'This pet is no longer available for adoption.',
+        );
       }
 
       const previous = await this.applications.findOne({
@@ -80,7 +85,9 @@ export class ApplicationsService {
         },
         { transaction: t },
       );
-      this.logger.log(`Application ${created.id} submitted by ${user.id} for pet ${pet.id}`);
+      this.logger.log(
+        `Application ${created.id} submitted by ${user.id} for pet ${pet.id}`,
+      );
       return created;
     });
   }
@@ -95,7 +102,9 @@ export class ApplicationsService {
   /**
    * Staff-only listing across every applicant. Filters and paginates.
    */
-  async listAll(query: ListApplicationsQueryDto): Promise<PaginatedApplications> {
+  async listAll(
+    query: ListApplicationsQueryDto,
+  ): Promise<PaginatedApplications> {
     const where: Record<string, unknown> = {};
     if (query.status) where['status'] = query.status;
     if (query.petId) where['petId'] = query.petId;
@@ -134,7 +143,9 @@ export class ApplicationsService {
   private async decide(
     staff: AuthUser,
     applicationId: string,
-    decision: typeof ApplicationStatus.APPROVED | typeof ApplicationStatus.REJECTED,
+    decision:
+      | typeof ApplicationStatus.APPROVED
+      | typeof ApplicationStatus.REJECTED,
     t: Transaction,
   ): Promise<Application> {
     const application = await this.applications.findByPk(applicationId, {

@@ -10,7 +10,10 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 import { Application } from '../applications/application.model.js';
-import { USER_ROLE_VALUES, UserRole } from '../../common/enums/user-role.enum.js';
+import {
+  USER_ROLE_VALUES,
+  UserRole,
+} from '../../common/enums/user-role.enum.js';
 
 export interface UserCreationAttrs {
   email: string;

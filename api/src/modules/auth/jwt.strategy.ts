@@ -1,10 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy, type StrategyOptionsWithoutRequest } from 'passport-jwt';
+import {
+  ExtractJwt,
+  Strategy,
+  type StrategyOptionsWithoutRequest,
+} from 'passport-jwt';
 import type { AppEnv } from '../../config/env.validation.js';
 import type { AuthUser, JwtPayload } from '../../common/types/auth-user.js';
-import { USER_ROLE_VALUES, type UserRole } from '../../common/enums/user-role.enum.js';
+import { USER_ROLE_VALUES } from '../../common/enums/user-role.enum.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -37,6 +41,6 @@ function isJwtPayload(value: unknown): value is JwtPayload {
     typeof v['sub'] === 'string' &&
     typeof v['email'] === 'string' &&
     typeof v['role'] === 'string' &&
-    (USER_ROLE_VALUES as readonly string[]).includes(v['role'] as UserRole)
+    (USER_ROLE_VALUES as readonly string[]).includes(v['role'])
   );
 }

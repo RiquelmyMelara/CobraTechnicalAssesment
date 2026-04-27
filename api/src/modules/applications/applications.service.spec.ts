@@ -20,8 +20,8 @@ describe('ApplicationsService', () => {
   const fakeTransaction = { LOCK: { UPDATE: 'UPDATE' } };
 
   const sequelize = {
-    transaction: jest.fn(async (cb: (t: typeof fakeTransaction) => unknown) =>
-      cb(fakeTransaction),
+    transaction: jest.fn((cb: (t: typeof fakeTransaction) => unknown) =>
+      Promise.resolve(cb(fakeTransaction)),
     ),
   };
 
@@ -73,7 +73,10 @@ describe('ApplicationsService', () => {
     });
 
     it('409 when the pet is not available', async () => {
-      pets.findByPk.mockResolvedValue({ id: 'pet-1', status: PetStatus.ADOPTED });
+      pets.findByPk.mockResolvedValue({
+        id: 'pet-1',
+        status: PetStatus.ADOPTED,
+      });
       await expect(
         service.submit(user, { petId: 'pet-1' }),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -81,7 +84,10 @@ describe('ApplicationsService', () => {
     });
 
     it('409 when the same user already applied for this pet', async () => {
-      pets.findByPk.mockResolvedValue({ id: 'pet-1', status: PetStatus.AVAILABLE });
+      pets.findByPk.mockResolvedValue({
+        id: 'pet-1',
+        status: PetStatus.AVAILABLE,
+      });
       // First findOne — duplicate-by-user check
       applications.findOne.mockResolvedValueOnce({
         id: 'old-app',
@@ -96,7 +102,10 @@ describe('ApplicationsService', () => {
     });
 
     it('409 when another applicant already has a pending application', async () => {
-      pets.findByPk.mockResolvedValue({ id: 'pet-1', status: PetStatus.AVAILABLE });
+      pets.findByPk.mockResolvedValue({
+        id: 'pet-1',
+        status: PetStatus.AVAILABLE,
+      });
       applications.findOne
         .mockResolvedValueOnce(null) // no duplicate-by-user
         .mockResolvedValueOnce({
@@ -112,8 +121,13 @@ describe('ApplicationsService', () => {
     });
 
     it('creates a pending application when all checks pass', async () => {
-      pets.findByPk.mockResolvedValue({ id: 'pet-1', status: PetStatus.AVAILABLE });
-      applications.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      pets.findByPk.mockResolvedValue({
+        id: 'pet-1',
+        status: PetStatus.AVAILABLE,
+      });
+      applications.findOne
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       const created = { id: 'new-app', petId: 'pet-1', userId: user.id };
       applications.create.mockResolvedValue(created);
 
@@ -135,8 +149,13 @@ describe('ApplicationsService', () => {
     });
 
     it('locks the pet row with FOR UPDATE inside the transaction', async () => {
-      pets.findByPk.mockResolvedValue({ id: 'pet-1', status: PetStatus.AVAILABLE });
-      applications.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+      pets.findByPk.mockResolvedValue({
+        id: 'pet-1',
+        status: PetStatus.AVAILABLE,
+      });
+      applications.findOne
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
       applications.create.mockResolvedValue({ id: 'new-app' });
       await service.submit(user, { petId: 'pet-1' });
       expect(pets.findByPk).toHaveBeenCalledWith('pet-1', {
@@ -208,7 +227,11 @@ describe('ApplicationsService', () => {
       expect(pet.save).toHaveBeenCalledWith({ transaction: fakeTransaction });
 
       expect(applications.update).toHaveBeenCalledTimes(1);
-      const [patch, opts] = applications.update.mock.calls[0] ?? [];
+      const call = applications.update.mock.calls[0] as [
+        Record<string, unknown>,
+        { where: Record<string, unknown>; transaction: unknown },
+      ];
+      const [patch, opts] = call;
       expect(patch).toEqual(
         expect.objectContaining({
           status: ApplicationStatus.REJECTED,
@@ -216,11 +239,10 @@ describe('ApplicationsService', () => {
         }),
       );
       // Sibling clause: same pet, still pending, exclude this application.
-      const where = (opts as { where: Record<string, unknown> }).where;
-      expect(where['petId']).toBe('pet-1');
-      expect(where['status']).toBe(ApplicationStatus.PENDING);
-      expect(where['id']).toEqual(expect.objectContaining({}));
-      expect((opts as { transaction: unknown }).transaction).toBe(fakeTransaction);
+      expect(opts.where['petId']).toBe('pet-1');
+      expect(opts.where['status']).toBe(ApplicationStatus.PENDING);
+      expect(opts.where['id']).toEqual(expect.objectContaining({}));
+      expect(opts.transaction).toBe(fakeTransaction);
     });
   });
 

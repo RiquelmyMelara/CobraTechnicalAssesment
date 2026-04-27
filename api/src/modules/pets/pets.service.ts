@@ -77,8 +77,10 @@ export class PetsService {
     }
 
     if (dto.name !== undefined) pet.name = dto.name.trim();
-    if (dto.species !== undefined) pet.species = dto.species.trim().toLowerCase();
-    if (dto.breed !== undefined) pet.breed = dto.breed === null ? null : dto.breed.trim();
+    if (dto.species !== undefined)
+      pet.species = dto.species.trim().toLowerCase();
+    if (dto.breed !== undefined)
+      pet.breed = dto.breed === null ? null : dto.breed.trim();
     if (dto.ageYears !== undefined) pet.ageYears = dto.ageYears;
     if (dto.description !== undefined) pet.description = dto.description.trim();
     if (dto.status !== undefined) pet.status = dto.status;

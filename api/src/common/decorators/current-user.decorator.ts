@@ -8,7 +8,9 @@ import type { AuthUser } from '../types/auth-user.js';
  */
 export const CurrentUser = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): AuthUser => {
-    const request = ctx.switchToHttp().getRequest<Request & { user?: AuthUser }>();
+    const request = ctx
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthUser }>();
     if (!request.user) {
       throw new Error(
         'CurrentUser used on an unauthenticated route — apply JwtAuthGuard first.',

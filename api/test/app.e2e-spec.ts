@@ -7,7 +7,14 @@
  * automatically if the connection fails so unit-test runs in CI without
  * a database stay green. Use a *separate* test database (set
  * DATABASE_NAME to e.g. 'cobra_pets_test') — the test wipes the schema.
+ *
+ * supertest's `.body` is typed as `any`; assertions go through it. The
+ * file-level disable below keeps the assertions readable rather than
+ * peppering casts onto every line.
  */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access,
+                  @typescript-eslint/no-unsafe-assignment,
+                  @typescript-eslint/no-unsafe-call */
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -51,7 +58,6 @@ describe('Pet Adoption (E2E)', () => {
       // the role gate without exposing role-set in the public API.
     } catch (err) {
       dbReachable = false;
-      // eslint-disable-next-line no-console
       console.warn(
         '[e2e] Postgres not reachable; skipping E2E suite. Cause:',
         err instanceof Error ? err.message : err,
@@ -69,15 +75,13 @@ describe('Pet Adoption (E2E)', () => {
     }
   });
 
-  const skipIfNoDb = (): void => {
-    if (!dbReachable) {
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(true).toBe(true);
-    }
-  };
-
   it('full happy path: register -> apply -> staff approve -> cascade', async () => {
-    if (!dbReachable) return skipIfNoDb();
+    if (!dbReachable) {
+      // The suite has nothing to assert without a DB; pass as a no-op so
+      // unit-only runs stay green.
+      expect(true).toBe(true);
+      return;
+    }
 
     // 1. Register a regular adopter and a staff candidate.
     const adopter = await request(server)
@@ -179,7 +183,10 @@ describe('Pet Adoption (E2E)', () => {
       .expect(200);
     expect(mine.body).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: adopterAppId, status: ApplicationStatus.PENDING }),
+        expect.objectContaining({
+          id: adopterAppId,
+          status: ApplicationStatus.PENDING,
+        }),
       ]),
     );
 
@@ -199,6 +206,8 @@ describe('Pet Adoption (E2E)', () => {
 
     // 12. Sanity: model count matches.
     const appModel = app.get<typeof Application>(getModelToken(Application));
-    expect(await appModel.count({ where: { petId } })).toBeGreaterThanOrEqual(1);
+    expect(await appModel.count({ where: { petId } })).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 });

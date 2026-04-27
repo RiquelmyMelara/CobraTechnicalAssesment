@@ -31,27 +31,77 @@ interface PetSeed {
 }
 
 const PET_SEEDS: ReadonlyArray<PetSeed> = [
-  { name: 'Luna', species: 'dog', breed: 'Border Collie', ageYears: 2,
-    description: 'Energetic, loves fetch and long walks.' },
-  { name: 'Milo', species: 'cat', breed: 'Tabby', ageYears: 4,
-    description: 'Lap cat, judgmental, perfect.' },
-  { name: 'Nala', species: 'dog', breed: 'Labrador Mix', ageYears: 5,
-    description: 'Calm and great with kids.' },
-  { name: 'Ozzy', species: 'rabbit', breed: 'Holland Lop', ageYears: 1,
-    description: 'Soft, curious, eats too much spinach.' },
-  { name: 'Pip', species: 'parrot', breed: 'Cockatiel', ageYears: 3,
-    description: 'Whistles the chorus of Take On Me.' },
-  { name: 'Rex', species: 'dog', breed: 'Mutt', ageYears: 7,
-    description: 'Senior gent. Naps, snacks, and gentle strolls.' },
-  { name: 'Sage', species: 'cat', breed: 'Domestic Shorthair', ageYears: 2,
-    description: 'Black-and-white tuxedo, formal at all times.' },
-  { name: 'Tia', species: 'dog', breed: 'Beagle', ageYears: 3,
-    description: 'Nose first, brain second.' },
-  { name: 'Uma', species: 'cat', breed: 'Siamese', ageYears: 6,
+  {
+    name: 'Luna',
+    species: 'dog',
+    breed: 'Border Collie',
+    ageYears: 2,
+    description: 'Energetic, loves fetch and long walks.',
+  },
+  {
+    name: 'Milo',
+    species: 'cat',
+    breed: 'Tabby',
+    ageYears: 4,
+    description: 'Lap cat, judgmental, perfect.',
+  },
+  {
+    name: 'Nala',
+    species: 'dog',
+    breed: 'Labrador Mix',
+    ageYears: 5,
+    description: 'Calm and great with kids.',
+  },
+  {
+    name: 'Ozzy',
+    species: 'rabbit',
+    breed: 'Holland Lop',
+    ageYears: 1,
+    description: 'Soft, curious, eats too much spinach.',
+  },
+  {
+    name: 'Pip',
+    species: 'parrot',
+    breed: 'Cockatiel',
+    ageYears: 3,
+    description: 'Whistles the chorus of Take On Me.',
+  },
+  {
+    name: 'Rex',
+    species: 'dog',
+    breed: 'Mutt',
+    ageYears: 7,
+    description: 'Senior gent. Naps, snacks, and gentle strolls.',
+  },
+  {
+    name: 'Sage',
+    species: 'cat',
+    breed: 'Domestic Shorthair',
+    ageYears: 2,
+    description: 'Black-and-white tuxedo, formal at all times.',
+  },
+  {
+    name: 'Tia',
+    species: 'dog',
+    breed: 'Beagle',
+    ageYears: 3,
+    description: 'Nose first, brain second.',
+  },
+  {
+    name: 'Uma',
+    species: 'cat',
+    breed: 'Siamese',
+    ageYears: 6,
     description: 'Already adopted — example of a closed listing.',
-    status: PetStatus.ADOPTED },
-  { name: 'Vincent', species: 'rabbit', breed: 'Mini Rex', ageYears: 2,
-    description: 'Polite, occasionally disapproves.' },
+    status: PetStatus.ADOPTED,
+  },
+  {
+    name: 'Vincent',
+    species: 'rabbit',
+    breed: 'Mini Rex',
+    ageYears: 2,
+    description: 'Polite, occasionally disapproves.',
+  },
 ];
 
 async function seed(): Promise<void> {
@@ -70,7 +120,9 @@ async function seed(): Promise<void> {
     const sequelize = app.get(Sequelize);
     const users = app.get<typeof User>(getModelToken(User));
     const pets = app.get<typeof Pet>(getModelToken(Pet));
-    const applications = app.get<typeof Application>(getModelToken(Application));
+    const applications = app.get<typeof Application>(
+      getModelToken(Application),
+    );
 
     logger.log('Dropping and recreating schema…');
     await sequelize.sync({ force: true });
@@ -130,7 +182,7 @@ async function seed(): Promise<void> {
     await applications.create({
       petId: pet('Nala').id,
       userId: bob.id,
-      message: "Looking for a calm dog great with my kids.",
+      message: 'Looking for a calm dog great with my kids.',
     });
     await applications.create({
       petId: pet('Milo').id,
@@ -165,8 +217,7 @@ async function seed(): Promise<void> {
 }
 
 seed().catch((err: unknown) => {
-  // Top-level fatal — Nest's logger may not be available.
-  // eslint-disable-next-line no-console
+  // Top-level fatal — Nest's logger may not be available here.
   console.error('Seed failed:', err);
   process.exit(1);
 });

@@ -1,6 +1,17 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
-import { PET_STATUS_VALUES, PetStatus } from '../../../common/enums/pet-status.enum.js';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
+import {
+  PET_STATUS_VALUES,
+  PetStatus,
+} from '../../../common/enums/pet-status.enum.js';
 
 export class ListPetsQueryDto {
   @IsOptional()
@@ -13,7 +24,9 @@ export class ListPetsQueryDto {
    * pets unless explicitly asked for them.
    */
   @IsOptional()
-  @IsEnum(PET_STATUS_VALUES, { message: `status must be one of: ${PET_STATUS_VALUES.join(', ')}` })
+  @IsEnum(PET_STATUS_VALUES, {
+    message: `status must be one of: ${PET_STATUS_VALUES.join(', ')}`,
+  })
   status?: PetStatus = PetStatus.AVAILABLE;
 
   @IsOptional()
