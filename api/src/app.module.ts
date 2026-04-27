@@ -4,6 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { buildSequelizeOptions } from './config/database.config.js';
 import { envValidationSchema, type AppEnv } from './config/env.validation.js';
 import { ApplicationsModule } from './modules/applications/applications.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 import { PetsModule } from './modules/pets/pets.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 
@@ -23,6 +24,7 @@ import { UsersModule } from './modules/users/users.module.js';
     UsersModule,
     PetsModule,
     ApplicationsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
