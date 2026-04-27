@@ -82,12 +82,27 @@ export class Application extends Model<Application, ApplicationCreationAttrs> {
   @CreatedAt declare createdAt: Date;
   @UpdatedAt declare updatedAt: Date;
 
-  @BelongsTo(() => Pet, { foreignKey: 'petId', as: 'pet' })
+  // Deleting a pet should remove its applications — they're meaningless
+  // without the listing.
+  @BelongsTo(() => Pet, { foreignKey: 'petId', as: 'pet', onDelete: 'CASCADE' })
   declare pet?: Pet;
 
-  @BelongsTo(() => User, { foreignKey: 'userId', as: 'applicant' })
+  // Deleting an applicant should remove their applications too — there's no
+  // useful audit value in keeping a row whose owner is gone.
+  @BelongsTo(() => User, {
+    foreignKey: 'userId',
+    as: 'applicant',
+    onDelete: 'CASCADE',
+  })
   declare applicant?: User;
 
-  @BelongsTo(() => User, { foreignKey: 'decidedBy', as: 'decider' })
+  // The staff member who decided the application is audit metadata. If a
+  // staff account is removed we keep the application row but clear the
+  // pointer rather than cascade-deleting historical decisions.
+  @BelongsTo(() => User, {
+    foreignKey: 'decidedBy',
+    as: 'decider',
+    onDelete: 'SET NULL',
+  })
   declare decider?: User | null;
 }
