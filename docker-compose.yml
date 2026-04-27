@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cobra_pets_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cobra
+      POSTGRES_PASSWORD: cobra
+      POSTGRES_DB: cobra_pets
+    ports:
+      - "5432:5432"
+    volumes:
+      - cobra_pets_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cobra -d cobra_pets"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  cobra_pets_data:
